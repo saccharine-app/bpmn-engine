@@ -12,8 +12,8 @@ use Saccharine\BpmnEngine\Enums\WorkflowInstanceStatus;
 class WorkflowInstanceResource extends Resource
 {
     protected static ?string $model = WorkflowInstance::class;
-    protected static ?string $navigationIcon = 'heroicon-o-cpu-chip';
-    protected static ?string $navigationGroup = 'Process Orchestration';
+    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-cpu-chip';
+    protected static \UnitEnum|string|null $navigationGroup = 'Process Orchestration';
 
     // Instances are generally created by the Engine, so we disable manual creation
     public static function canCreate(): bool
