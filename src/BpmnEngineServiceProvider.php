@@ -40,6 +40,7 @@ class BpmnEngineServiceProvider extends ServiceProvider
                 \Saccharine\BpmnEngine\Console\Commands\InstallCommand::class,
                 \Saccharine\BpmnEngine\Console\Commands\DemoCommand::class,
                 \Saccharine\BpmnEngine\Console\Commands\InstanceControlCommand::class,
+                \Saccharine\BpmnEngine\Console\Commands\MakeFilamentCommand::class
             ]);
 
             // Allow the host app to publish the config file
