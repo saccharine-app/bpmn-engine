@@ -19,23 +19,32 @@ class MakeFilamentCommand extends Command
             File::makeDirectory($targetDir, 0755, true);
         }
 
-        // Define the resources to publish
-        $resources = [
-            'WorkflowDefinitionResource',
-            'WorkflowInstanceResource',
+        $resourcesDir = app_path('Filament/Resources/Bpmn');
+
+        // Publish the Resources
+        $resources = ['WorkflowDefinitionResource', 'WorkflowInstanceResource'];
+        foreach ($resources as $resource) {
+            File::ensureDirectoryExists($resourcesDir);
+            File::copy(
+                __DIR__ . "/../../../stubs/filament/{$resource}.stub", 
+                "{$resourcesDir}/{$resource}.php"
+            );
+        }
+
+        // Publish the List Pages
+        $pages = [
+            'WorkflowDefinitionResource' => 'ListWorkflowDefinitions',
+            'WorkflowInstanceResource' => 'ListWorkflowInstances',
         ];
 
-        foreach ($resources as $resource) {
-            $stubPath = __DIR__ . "/../../../stubs/filament/{$resource}.stub";
-            $targetPath = "{$targetDir}/{$resource}.php";
-
-            if (File::exists($targetPath)) {
-                $this->warn("{$resource} already exists. Skipping.");
-                continue;
-            }
-
-            File::copy($stubPath, $targetPath);
-            $this->line("Published: {$resource}");
+        foreach ($pages as $resourceFolder => $pageClass) {
+            $pageDir = "{$resourcesDir}/{$resourceFolder}/Pages";
+            File::ensureDirectoryExists($pageDir);
+            
+            File::copy(
+                __DIR__ . "/../../../stubs/filament/{$pageClass}.stub", 
+                "{$pageDir}/{$pageClass}.php"
+            );
         }
 
         $this->info('Filament integration complete! You should now see the BPMN resources in your admin panel.');

@@ -8,6 +8,7 @@ use Filament\Resources\Resource;
 use Workflow\WorkflowStub;
 use Saccharine\BpmnEngine\Models\WorkflowInstance;
 use Saccharine\BpmnEngine\Enums\WorkflowInstanceStatus;
+use App\Filament\Resources\Bpmn\WorkflowInstanceResource\Pages;
 
 class WorkflowInstanceResource extends Resource
 {
@@ -101,7 +102,7 @@ class WorkflowInstanceResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => \Filament\Resources\Pages\ListRecords::route('/'),
+            'index' => Pages\ListWorkflowInstances::route('/'),
         ];
     }
 }

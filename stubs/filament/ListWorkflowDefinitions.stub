@@ -1,0 +1,18 @@
+<?php
+
+namespace App\Filament\Resources\Bpmn\WorkflowDefinitionResource\Pages;
+
+use App\Filament\Resources\Bpmn\WorkflowDefinitionResource;
+use Filament\Resources\Pages\ListRecords;
+
+class ListWorkflowDefinitions extends ListRecords
+{
+    protected static string $resource = WorkflowDefinitionResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            // If you want a "Create" button here eventually, add it here
+        ];
+    }
+}
