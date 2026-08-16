@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Bpmn;
 
 use Filament\Forms;
 use Filament\Tables;
+use Filament\Actions\Action;
 use Filament\Resources\Resource;
 use Workflow\WorkflowStub;
 use Saccharine\BpmnEngine\Models\WorkflowInstance;
@@ -56,16 +57,16 @@ class WorkflowInstanceResource extends Resource
             ])
             ->defaultSort('created_at', 'desc')
             ->actions([
-                // 1. Open the Live Visual Tracker (points to your package's custom blade view)
-                Tables\Actions\Action::make('track')
+                // Open the Live Visual Tracker (points to your package's custom blade view)
+                Action::make('track')
                     ->label('Live Tracker')
                     ->icon('heroicon-o-eye')
                     ->color('info')
                     ->url(fn (WorkflowInstance $record): string => route('bpmn.instances.track', $record->id)) // Adjust to your tracking route
                     ->openUrlInNewTab(),
 
-                // 2. Intervention: Suspend
-                Tables\Actions\Action::make('suspend')
+                // Intervention: Suspend
+                Action::make('suspend')
                     ->icon('heroicon-o-pause')
                     ->color('warning')
                     ->requiresConfirmation()
@@ -75,8 +76,8 @@ class WorkflowInstanceResource extends Resource
                         WorkflowStub::load($record->durable_workflow_id)->suspendWorkflow();
                     }),
 
-                // 3. Intervention: Resume
-                Tables\Actions\Action::make('resume')
+                // Intervention: Resume
+                Action::make('resume')
                     ->icon('heroicon-o-play')
                     ->color('success')
                     ->visible(fn (WorkflowInstance $record) => $record->status === WorkflowInstanceStatus::SUSPENDED)
@@ -85,8 +86,8 @@ class WorkflowInstanceResource extends Resource
                         WorkflowStub::load($record->durable_workflow_id)->resumeWorkflow();
                     }),
 
-                // 4. Intervention: Halt
-                Tables\Actions\Action::make('halt')
+                // Intervention: Halt
+                Action::make('halt')
                     ->icon('heroicon-o-stop')
                     ->color('danger')
                     ->requiresConfirmation()
