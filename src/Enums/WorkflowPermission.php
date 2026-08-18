@@ -4,12 +4,12 @@ namespace Saccharine\BpmnEngine\Enums;
 
 enum WorkflowPermission: string
 {
-    case VIEW = 'view';
-    case EDIT = 'edit';
-    case DELETE = 'delete';
-    case SUSPEND_INSTANCE = 'suspend-instance';
-    case RESUME_INSTANCE = 'resume-instance';
-    case HALT_INSTANCE = 'halt-instance';
+    case VIEW = 'bpmn:view';
+    case EDIT = 'bpmn:edit';
+    case DELETE = 'bpmn:delete';
+    case SUSPEND_INSTANCE = 'bpmn:suspend-instance';
+    case RESUME_INSTANCE = 'bpmn:resume-instance';
+    case HALT_INSTANCE = 'bpmn:halt-instance';
 
     public function label(): string
     {
