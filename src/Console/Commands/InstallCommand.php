@@ -3,6 +3,7 @@
 namespace Saccharine\BpmnEngine\Console\Commands;
 
 use Illuminate\Console\Command;
+use Saccharine\BpmnEngine\Enums\WorkflowPermission;
 
 class InstallCommand extends Command
 {
