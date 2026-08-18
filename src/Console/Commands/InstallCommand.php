@@ -3,7 +3,6 @@
 namespace Saccharine\BpmnEngine\Console\Commands;
 
 use Illuminate\Console\Command;
-use Saccharine\BpmnEngine\Database\Seeders\BpmnPermissionSeeder;
 
 class InstallCommand extends Command
 {
@@ -43,12 +42,31 @@ class InstallCommand extends Command
 
         if (class_exists('Spatie\Permission\Models\Permission')) {
             if ($this->option('seed-permissions') || $this->confirm('Seed BPMN permissions into Spatie/Shield?', true)) {
-                $this->call('db:seed', ['--class' => BpmnPermissionSeeder::class]);
-                $this->info('BPMN permissions seeded successfully.');
+                $this->seedPermissions();
             }
         }
 
         $this->info('BPMN Engine installed successfully!');
         $this->line('You can now navigate to /bpmn/workflows to start designing.');
+    }
+
+    /**
+     * Seeds the Spatie permissions directly without relying on external Seeder classes.
+     */
+    protected function seedPermissions(): void
+    {
+        $permissionClass = config('permission.models.permission', 'Spatie\Permission\Models\Permission');
+        $guardName = config('filament.auth.guard') ?? config('auth.defaults.guard', 'web');
+
+        $count = 0;
+        foreach (WorkflowPermission::cases() as $permission) {
+            $permissionClass::firstOrCreate([
+                'name' => $permission->value,
+                'guard_name' => $guardName,
+            ]);
+            $count++;
+        }
+
+        $this->info("Successfully seeded {$count} BPMN custom permissions.");
     }
 }
