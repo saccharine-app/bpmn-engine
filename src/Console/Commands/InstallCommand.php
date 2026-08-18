@@ -7,7 +7,8 @@ use Saccharine\BpmnEngine\Database\Seeders\BpmnPermissionSeeder;
 
 class InstallCommand extends Command
 {
-    protected $signature = 'bpmn:install';
+    // protected $signature = 'bpmn:install';
+    protected $signature = 'bpmn:install {--seed-permissions : Seed permissions for Spatie/Shield}';
     protected $description = 'Install the BPMN Engine, publish assets, and prepare the database';
 
     public function handle()
