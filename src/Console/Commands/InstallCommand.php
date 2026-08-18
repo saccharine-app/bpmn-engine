@@ -3,6 +3,7 @@
 namespace Saccharine\BpmnEngine\Console\Commands;
 
 use Illuminate\Console\Command;
+use Saccharine\BpmnEngine\Database\Seeders\BpmnPermissionSeeder;
 
 class InstallCommand extends Command
 {
@@ -37,6 +38,13 @@ class InstallCommand extends Command
         // Offer to run migrations
         if ($this->confirm('Would you like to run the database migrations now?', true)) {
             $this->call('migrate');
+        }
+
+        if (class_exists('Spatie\Permission\Models\Permission')) {
+            if ($this->option('seed-permissions') || $this->confirm('Seed BPMN permissions into Spatie/Shield?', true)) {
+                $this->call('db:seed', ['--class' => BpmnPermissionSeeder::class]);
+                $this->info('BPMN permissions seeded successfully.');
+            }
         }
 
         $this->info('BPMN Engine installed successfully!');

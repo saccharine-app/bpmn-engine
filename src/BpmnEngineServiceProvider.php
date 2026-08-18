@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use Saccharine\BpmnEngine\Listeners\WorkflowTriggerListener;
+use Saccharine\BpmnEngine\Enums\WorkflowPermission;
+use Saccharine\BpmnEngine\Support\PermissionManifest;
 
 class BpmnEngineServiceProvider extends ServiceProvider
 {
@@ -60,6 +62,18 @@ class BpmnEngineServiceProvider extends ServiceProvider
         }
 
         $this->registerGates();
+
+        PermissionManifest::register(
+            array_column(WorkflowPermission::cases(), 'value')
+        );
+
+        // Auto-inject into Filament Shield config if the host has it installed
+        if (config()->has('filament-shield.custom_permissions')) {
+            config()->set('filament-shield.custom_permissions', array_unique(array_merge(
+                config('filament-shield.custom_permissions', []),
+                PermissionManifest::all()
+            )));
+        }
     }
 
     public function register()
@@ -76,14 +90,17 @@ class BpmnEngineServiceProvider extends ServiceProvider
     protected function registerGates()
     {
         // View the dashboards and editor
-        Gate::define('bpmn:view', fn ($user = null) => app()->environment('local'));
+        Gate::define(WorkflowPermission::VIEW, fn ($user = null) => app()->environment('local'));
         
         // Create workflows and save diagram changes
-        Gate::define('bpmn:edit', fn ($user = null) => app()->environment('local'));
+        Gate::define(WorkflowPermission::EDIT, fn ($user = null) => app()->environment('local'));
+
+        // Delete workflows and their versions
+        Gate::define(WorkflowPermission::DELETE, fn ($user = null) => app()->environment('local'));
         
         // Control running workflow instances
-        Gate::define('bpmn:suspend-instance', fn ($user = null) => app()->environment('local'));
-        Gate::define('bpmn:resume-instance', fn ($user = null) => app()->environment('local'));
-        Gate::define('bpmn:halt-instance', fn ($user = null) => app()->environment('local'));
+        Gate::define(WorkflowPermission::SUSPEND_INSTANCE, fn ($user = null) => app()->environment('local'));
+        Gate::define(WorkflowPermission::RESUME_INSTANCE, fn ($user = null) => app()->environment('local'));
+        Gate::define(WorkflowPermission::HALT_INSTANCE, fn ($user = null) => app()->environment('local'));
     }
 }

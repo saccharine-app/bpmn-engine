@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Gate;
 use Saccharine\BpmnEngine\Models\WorkflowDefinition;
 use Saccharine\BpmnEngine\Services\BpmnParserService;
+use Saccharine\BpmnEngine\Enums\WorkflowPermission;
 use Exception;
 
 class WorkflowController extends Controller
@@ -25,7 +26,7 @@ class WorkflowController extends Controller
      */
     public function index()
     {
-        Gate::authorize('bpmn:view');
+        Gate::authorize(WorkflowPermission::VIEW);
 
         $definitions = WorkflowDefinition::with('versions')->get();
         return view('bpmn-engine::dashboard', compact('definitions'));
@@ -36,7 +37,7 @@ class WorkflowController extends Controller
      */
     public function store(Request $request)
     {
-        Gate::authorize('bpmn:edit'); // Prevent unauthorized users from making changes
+        Gate::authorize(WorkflowPermission::EDIT); // Prevent unauthorized users from making changes
 
         $request->validate([
             'name' => 'required|string|max:255',
@@ -53,7 +54,7 @@ class WorkflowController extends Controller
 
     public function storeVersion(Request $request, $definitionId): JsonResponse
     {
-        Gate::authorize('bpmn:edit');
+        Gate::authorize(WorkflowPermission::EDIT);
 
         $request->validate([
             'xml' => 'required|string',
@@ -99,7 +100,7 @@ class WorkflowController extends Controller
      */
     public function design($definitionId)
     {
-        Gate::authorize('bpmn:view'); // Or 'bpmn:edit' depending on how strict we want the canvas to be
+        Gate::authorize(WorkflowPermission::VIEW); // Or 'bpmn:edit' depending on how strict we want the canvas to be
 
         $definition = WorkflowDefinition::findOrFail($definitionId);
         

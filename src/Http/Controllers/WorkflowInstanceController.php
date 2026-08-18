@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Gate;
 use Saccharine\BpmnEngine\Models\WorkflowInstance;
 use Saccharine\BpmnEngine\Enums\WorkflowInstanceStatus;
+use Saccharine\BpmnEngine\Enums\WorkflowPermission;
 use Workflow\WorkflowStub;
 
 class WorkflowInstanceController extends Controller
@@ -17,7 +18,7 @@ class WorkflowInstanceController extends Controller
      */
     public function index()
     {
-        Gate::authorize('bpmn:view');
+        Gate::authorize(WorkflowPermission::VIEW);
 
         // Eager load the version, definition, and active tokens
         $instances = WorkflowInstance::with(['version.definition', 'tokens'])
@@ -33,7 +34,7 @@ class WorkflowInstanceController extends Controller
      */
     public function suspend($id)
     {
-        Gate::authorize('bpmn:suspend-instance');
+        Gate::authorize(WorkflowPermission::SUSPEND_INSTANCE);
 
         $instance = WorkflowInstance::findOrFail($id);
 
@@ -55,7 +56,7 @@ class WorkflowInstanceController extends Controller
      */
     public function resume($id)
     {
-        Gate::authorize('bpmn:resume-instance');
+        Gate::authorize(WorkflowPermission::RESUME_INSTANCE);
 
         $instance = WorkflowInstance::findOrFail($id);
 
@@ -78,7 +79,7 @@ class WorkflowInstanceController extends Controller
      */
     public function halt($id)
     {
-        Gate::authorize('bpmn:halt-instance');
+        Gate::authorize(WorkflowPermission::HALT_INSTANCE);
 
         $instance = WorkflowInstance::findOrFail($id);
 
@@ -103,7 +104,7 @@ class WorkflowInstanceController extends Controller
      */
     public function tokens($id): JsonResponse
     {
-        Gate::authorize('bpmn:view');
+        Gate::authorize(WorkflowPermission::VIEW);
         
         $instance = WorkflowInstance::with('tokens')->findOrFail($id);
 
