@@ -72,16 +72,13 @@ class BpmnEngineServiceProvider extends ServiceProvider
             array_column(WorkflowPermission::cases(), 'value')
         );
 
-        // Delay the injection until the application is fully booted
-        // This prevents Filament Shield from overwriting our injected config
-        $this->app->booted(function () {
-            config([
-                'filament-shield.custom_permissions' => array_unique(array_merge(
-                    config('filament-shield.custom_permissions', []),
-                    PermissionManifest::all()
-                ))
-            ]);
-        });
+        config([
+            'filament-shield.shield_resource.tabs.custom_permissions' => true,
+            'filament-shield.custom_permissions' => array_unique(array_merge(
+                config('filament-shield.custom_permissions', []),
+                PermissionManifest::all()
+            ))
+        ]);
         
         Gate::policy(WorkflowDefinition::class, WorkflowDefinitionPolicy::class);
         Gate::policy(WorkflowInstance::class, WorkflowInstancePolicy::class);
