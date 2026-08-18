@@ -6,9 +6,10 @@ use Filament\Forms;
 use Filament\Schemas;
 use Filament\Tables;
 use Filament\Resources\Resource;
-// use Filament\Tables\Actions\Action;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\TextInput;
+use Illuminate\Support\Str;
 use Saccharine\BpmnEngine\Models\WorkflowDefinition;
 use App\Filament\Resources\Bpmn\WorkflowDefinitionResource\Pages;
 
@@ -22,13 +23,22 @@ class WorkflowDefinitionResource extends Resource
     {
         return $schema
             ->components([
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
                     ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('key')
+                    ->maxLength(255)
+                    ->live(onBlur: true) // Triggers a re-render when the user clicks out
+                    ->afterStateUpdated(function (string $operation, $state, Forms\Set $set) {
+                        // Auto-generate the unique key based on the name during creation
+                        if ($operation === 'create') {
+                            $set('key', Str::slug($state));
+                        }
+                    }),
+
+                TextInput::make('key')
                     ->required()
                     ->unique(ignoreRecord: true)
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->helperText('A unique, machine-readable identifier (e.g., onboarding-process).'),
             ]);
     }
 
