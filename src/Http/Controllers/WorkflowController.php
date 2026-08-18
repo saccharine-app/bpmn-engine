@@ -26,7 +26,7 @@ class WorkflowController extends Controller
      */
     public function index()
     {
-        Gate::authorize(WorkflowPermission::VIEW);
+        Gate::authorize(WorkflowPermission::VIEW->value);
 
         $definitions = WorkflowDefinition::with('versions')->get();
         return view('bpmn-engine::dashboard', compact('definitions'));
@@ -37,7 +37,7 @@ class WorkflowController extends Controller
      */
     public function store(Request $request)
     {
-        Gate::authorize(WorkflowPermission::EDIT); // Prevent unauthorized users from making changes
+        Gate::authorize(WorkflowPermission::EDIT->value); // Prevent unauthorized users from making changes
 
         $request->validate([
             'name' => 'required|string|max:255',
@@ -54,7 +54,7 @@ class WorkflowController extends Controller
 
     public function storeVersion(Request $request, $definitionId): JsonResponse
     {
-        Gate::authorize(WorkflowPermission::EDIT);
+        Gate::authorize(WorkflowPermission::EDIT->value);
 
         $request->validate([
             'xml' => 'required|string',
@@ -100,7 +100,7 @@ class WorkflowController extends Controller
      */
     public function design($definitionId)
     {
-        Gate::authorize(WorkflowPermission::VIEW); // Or 'bpmn:edit' depending on how strict we want the canvas to be
+        Gate::authorize(WorkflowPermission::VIEW->value); // Or 'bpmn:edit' depending on how strict we want the canvas to be
 
         $definition = WorkflowDefinition::findOrFail($definitionId);
         

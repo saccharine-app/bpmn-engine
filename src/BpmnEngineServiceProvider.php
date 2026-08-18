@@ -98,17 +98,17 @@ class BpmnEngineServiceProvider extends ServiceProvider
     protected function registerGates()
     {
         // View the dashboards and editor
-        Gate::define(WorkflowPermission::VIEW, fn ($user = null) => app()->environment('local'));
+        Gate::define(WorkflowPermission::VIEW->value, fn ($user = null) => app()->environment('local'));
         
         // Create workflows and save diagram changes
-        Gate::define(WorkflowPermission::EDIT, fn ($user = null) => app()->environment('local'));
+        Gate::define(WorkflowPermission::EDIT->value, fn ($user = null) => app()->environment('local'));
 
         // Delete workflows and their versions
-        Gate::define(WorkflowPermission::DELETE, fn ($user = null) => app()->environment('local'));
+        Gate::define(WorkflowPermission::DELETE->value, fn ($user = null) => app()->environment('local'));
         
         // Control running workflow instances
-        Gate::define(WorkflowPermission::SUSPEND_INSTANCE, fn ($user = null) => app()->environment('local'));
-        Gate::define(WorkflowPermission::RESUME_INSTANCE, fn ($user = null) => app()->environment('local'));
-        Gate::define(WorkflowPermission::HALT_INSTANCE, fn ($user = null) => app()->environment('local'));
+        Gate::define(WorkflowPermission::SUSPEND_INSTANCE->value, fn ($user = null) => app()->environment('local'));
+        Gate::define(WorkflowPermission::RESUME_INSTANCE->value, fn ($user = null) => app()->environment('local'));
+        Gate::define(WorkflowPermission::HALT_INSTANCE->value, fn ($user = null) => app()->environment('local'));
     }
 }

@@ -18,7 +18,7 @@ class WorkflowInstanceController extends Controller
      */
     public function index()
     {
-        Gate::authorize(WorkflowPermission::VIEW);
+        Gate::authorize(WorkflowPermission::VIEW->value);
 
         // Eager load the version, definition, and active tokens
         $instances = WorkflowInstance::with(['version.definition', 'tokens'])
@@ -34,17 +34,17 @@ class WorkflowInstanceController extends Controller
      */
     public function suspend($id)
     {
-        Gate::authorize(WorkflowPermission::SUSPEND_INSTANCE);
+        Gate::authorize(WorkflowPermission::SUSPEND_INSTANCE->value);
 
         $instance = WorkflowInstance::findOrFail($id);
 
-        if ($instance->status !== WorkflowInstanceStatus::RUNNING) {
+        if ($instance->status !== WorkflowInstanceStatus::RUNNING->value) {
             return back()->with('error', 'Only running workflows can be suspended.');
         }
 
         // Update the relational state. The engine loop will read this on its next cycle.
-        $instance->update(['status' => WorkflowInstanceStatus::SUSPENDED]);
-        
+        $instance->update(['status' => WorkflowInstanceStatus::SUSPENDED->value]);
+
         $workflow = WorkflowStub::load($instance->durable_workflow_id);
         $workflow->suspendWorkflow();
 
@@ -56,16 +56,16 @@ class WorkflowInstanceController extends Controller
      */
     public function resume($id)
     {
-        Gate::authorize(WorkflowPermission::RESUME_INSTANCE);
+        Gate::authorize(WorkflowPermission::RESUME_INSTANCE->value);
 
         $instance = WorkflowInstance::findOrFail($id);
 
-        if ($instance->status !== WorkflowInstanceStatus::SUSPENDED) {
+        if ($instance->status !== WorkflowInstanceStatus::SUSPENDED->value) {
             return back()->with('error', 'Only suspended workflows can be resumed.');
         }
 
         // Update the database state
-        $instance->update(['status' => WorkflowInstanceStatus::RUNNING]);
+        $instance->update(['status' => WorkflowInstanceStatus::RUNNING->value]);
 
         // Load the durable coroutine and fire a signal to wake it up
         $workflow = WorkflowStub::load($instance->durable_workflow_id);
@@ -79,7 +79,7 @@ class WorkflowInstanceController extends Controller
      */
     public function halt($id)
     {
-        Gate::authorize(WorkflowPermission::HALT_INSTANCE);
+        Gate::authorize(WorkflowPermission::HALT_INSTANCE->value);
 
         $instance = WorkflowInstance::findOrFail($id);
 
@@ -90,7 +90,7 @@ class WorkflowInstanceController extends Controller
             return back()->with('error', 'This workflow is already in a terminal state.');
         }
         
-        $instance->update(['status' => WorkflowInstanceStatus::HALTED]);
+        $instance->update(['status' => WorkflowInstanceStatus::HALTED->value]);
 
         // Signal the engine to break its execution loop and clean up
         $workflow = WorkflowStub::load($instance->durable_workflow_id);
@@ -104,7 +104,7 @@ class WorkflowInstanceController extends Controller
      */
     public function tokens($id): JsonResponse
     {
-        Gate::authorize(WorkflowPermission::VIEW);
+        Gate::authorize(WorkflowPermission::VIEW->value);
         
         $instance = WorkflowInstance::with('tokens')->findOrFail($id);
 
