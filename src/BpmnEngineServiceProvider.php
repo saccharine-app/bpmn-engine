@@ -10,6 +10,11 @@ use Saccharine\BpmnEngine\Listeners\WorkflowTriggerListener;
 use Saccharine\BpmnEngine\Enums\WorkflowPermission;
 use Saccharine\BpmnEngine\Support\PermissionManifest;
 
+use Saccharine\BpmnEngine\Models\WorkflowDefinition;
+use Saccharine\BpmnEngine\Models\WorkflowInstance;
+use Saccharine\BpmnEngine\Policies\WorkflowDefinitionPolicy;
+use Saccharine\BpmnEngine\Policies\WorkflowInstancePolicy;
+
 class BpmnEngineServiceProvider extends ServiceProvider
 {
     public function boot()
@@ -68,12 +73,21 @@ class BpmnEngineServiceProvider extends ServiceProvider
         );
 
         // Auto-inject into Filament Shield config if the host has it installed
-        if (config()->has('filament-shield.custom_permissions')) {
+        /*if (config()->has('filament-shield.custom_permissions')) {
             config()->set('filament-shield.custom_permissions', array_unique(array_merge(
                 config('filament-shield.custom_permissions', []),
                 PermissionManifest::all()
             )));
-        }
+        }*/
+        config([
+            'filament-shield.custom_permissions' => array_unique(array_merge(
+                config('filament-shield.custom_permissions', []),
+                PermissionManifest::all()
+            ))
+        ]);
+        
+        Gate::policy(WorkflowDefinition::class, WorkflowDefinitionPolicy::class);
+        Gate::policy(WorkflowInstance::class, WorkflowInstancePolicy::class);
     }
 
     public function register()
