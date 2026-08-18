@@ -6,6 +6,7 @@ use Filament\Forms;
 use Filament\Tables;
 use Filament\Actions\Action;
 use Filament\Resources\Resource;
+use Filament\Panel;
 use Workflow\WorkflowStub;
 use Saccharine\BpmnEngine\Models\WorkflowInstance;
 use Saccharine\BpmnEngine\Enums\WorkflowInstanceStatus;
@@ -105,5 +106,12 @@ class WorkflowInstanceResource extends Resource
         return [
             'index' => Pages\ListWorkflowInstances::route('/'),
         ];
+    }
+
+    public static function getSlug(?Panel $panel = null): string
+    {
+        $prefix = trim(config('bpmn-engine.prefix', 'bpmn/workflows'), '/');
+        
+        return $prefix . '/instances';
     }
 }

@@ -9,6 +9,7 @@ use Filament\Resources\Resource;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
+use Filament\Panel;
 use Illuminate\Support\Str;
 use Saccharine\BpmnEngine\Models\WorkflowDefinition;
 use App\Filament\Resources\Bpmn\WorkflowDefinitionResource\Pages;
@@ -73,5 +74,13 @@ class WorkflowDefinitionResource extends Resource
         return [
             'index' => Pages\ListWorkflowDefinitions::route('/'),
         ];
+    }
+
+    public static function getSlug(?Panel $panel = null): string
+    {
+        // Strips leading/trailing slashes and appends the specific resource path
+        $prefix = trim(config('bpmn-engine.prefix', 'bpmn/workflows'), '/');
+        
+        return $prefix . '/definitions';
     }
 }
