@@ -44,6 +44,11 @@ class InstallCommand extends Command
         if (class_exists('Spatie\Permission\Models\Permission')) {
             if ($this->option('seed-permissions') || $this->confirm('Seed BPMN permissions into Spatie/Shield?', true)) {
                 $this->seedPermissions();
+
+                // Add a helpful reminder for Shield users
+                if (config()->has('filament-shield')) {
+                    $this->warn('ℹ Filament Shield detected: The Custom Permissions tab has been auto-enabled to display BPMN permissions.');
+                }
             }
         }
 
