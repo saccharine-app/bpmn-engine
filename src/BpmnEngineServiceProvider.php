@@ -68,16 +68,21 @@ class BpmnEngineServiceProvider extends ServiceProvider
 
         $this->registerGates();
 
-        PermissionManifest::register(
-            array_column(WorkflowPermission::cases(), 'value')
-        );
+        // Map the Enum cases into an associative array: ['bpmn:view' => 'View Workflows']
+        $permissionMap = [];
+        foreach (\Saccharine\BpmnEngine\Enums\WorkflowPermission::cases() as $permission) {
+            $permissionMap[$permission->value] = $permission->label();
+        }
 
+        PermissionManifest::register($permissionMap);
+        
+        // Inject directly into the Shield config.
         config([
             'filament-shield.shield_resource.tabs.custom_permissions' => true,
-            'filament-shield.custom_permissions' => array_unique(array_merge(
+            'filament-shield.custom_permissions' => array_merge(
                 config('filament-shield.custom_permissions', []),
                 PermissionManifest::all()
-            ))
+            )
         ]);
         
         Gate::policy(WorkflowDefinition::class, WorkflowDefinitionPolicy::class);
