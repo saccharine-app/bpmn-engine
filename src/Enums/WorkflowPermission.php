@@ -7,9 +7,9 @@ enum WorkflowPermission: string
     case VIEW = 'Bpmn:View';
     case EDIT = 'Bpmn:Edit';
     case DELETE = 'Bpmn:Delete';
-    case SUSPEND_INSTANCE = 'Bpmn:Suspend-Instance';
-    case RESUME_INSTANCE = 'Bpmn:Resume-Instance';
-    case HALT_INSTANCE = 'Bpmn:Halt-Instance';
+    case SUSPEND_INSTANCE = 'Bpmn:SuspendInstance';
+    case RESUME_INSTANCE = 'Bpmn:ResumeInstance';
+    case HALT_INSTANCE = 'Bpmn:HaltInstance';
 
     public function label(): string
     {
