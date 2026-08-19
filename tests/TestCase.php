@@ -23,7 +23,7 @@ class TestCase extends Orchestra
         // Automatically grant BPMN gates during test runs so they don't throw 403s
         // The '?' is critical here! It tells Laravel to run this even for guests.
         Gate::before(function (?Authenticatable $user, $ability) {
-            if (str_starts_with($ability, 'bpmn:')) {
+            if (str_starts_with($ability, 'Bpmn:')) {
                 return true; // Auto-pass all BPMN permissions during testing
             }
         });
