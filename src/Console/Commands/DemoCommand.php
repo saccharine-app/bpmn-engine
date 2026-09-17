@@ -209,8 +209,7 @@ class DemoCommand extends Command
           ['name' => 'Demo: Parallel Fulfillment (AND Split/Join)']
       );
 
-      $xml = <<<'XML'
-        <?xml version="1.0" encoding="UTF-8"?>
+      $xml = '<?xml version="1.0" encoding="UTF-8"?>
         <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
                           xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
                           xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
@@ -309,8 +308,7 @@ class DemoCommand extends Command
               </bpmndi:BPMNEdge>
             </bpmndi:BPMNPlane>
           </bpmndi:BPMNDiagram>
-        </bpmn:definitions>
-      XML;
+        </bpmn:definitions>';
 
       $version = $def->versions()->create([
           'version'   => $def->versions()->max('version') + 1,
@@ -327,8 +325,7 @@ class DemoCommand extends Command
             ['name' => 'Demo: SLA Escalation & Error Boundaries']
         );
 
-        $xml = <<<'XML'
-        <?xml version="1.0" encoding="UTF-8"?>
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>
         <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
                           xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
                           xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
@@ -439,8 +436,7 @@ class DemoCommand extends Command
               </bpmndi:BPMNEdge>
             </bpmndi:BPMNPlane>
           </bpmndi:BPMNDiagram>
-        </bpmn:definitions>
-      XML;
+        </bpmn:definitions>';
 
         $version = $def->versions()->create([
             'version'   => $def->versions()->max('version') + 1,
@@ -457,8 +453,7 @@ class DemoCommand extends Command
             ['name' => 'Demo: Parent Pipeline with Call Activity']
         );
 
-        $xml = <<<'XML'
-        <?xml version="1.0" encoding="UTF-8"?>
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>
         <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
                           xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
                           xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
@@ -558,8 +553,7 @@ class DemoCommand extends Command
               </bpmndi:BPMNEdge>
             </bpmndi:BPMNPlane>
           </bpmndi:BPMNDiagram>
-        </bpmn:definitions>
-        XML;
+        </bpmn:definitions>';
 
         $version = $def->versions()->create([
             'version'   => $def->versions()->max('version') + 1,
