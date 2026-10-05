@@ -1,0 +1,65 @@
+[
+  {
+    "name": "Send Notification",
+    "id": "saccharine.bpmn.SendNotification",
+    "appliesTo": [
+      "bpmn:ServiceTask"
+    ],
+    "properties": [
+      {
+        "label": "Implementation Key",
+        "type": "Hidden",
+        "value": "bpmn_send_notification",
+        "binding": {
+          "type": "property",
+          "name": "camunda:class"
+        }
+      },
+      {
+        "label": "Channel",
+        "type": "Dropdown",
+        "value": "mail",
+        "choices": [
+          { "name": "Email", "value": "mail" },
+          { "name": "Webhook (HTTP POST)", "value": "webhook" },
+          { "name": "System Log", "value": "log" }
+        ],
+        "binding": {
+          "type": "camunda:inputParameter",
+          "name": "notification_channel"
+        }
+      },
+      {
+        "label": "Recipient (Email address or Webhook URL)",
+        "type": "String",
+        "value": "{{ recipient_email }}",
+        "description": "Supports payload variables like {{ recipient_email }} or a direct URL.",
+        "binding": {
+          "type": "camunda:inputParameter",
+          "name": "notification_to"
+        },
+        "constraints": {
+          "notEmpty": true
+        }
+      },
+      {
+        "label": "Subject / Title",
+        "type": "String",
+        "value": "Order #{{ order_id }} Update",
+        "binding": {
+          "type": "camunda:inputParameter",
+          "name": "notification_subject"
+        }
+      },
+      {
+        "label": "Message Body",
+        "type": "Text",
+        "value": "Hello {{ customer_name }},\n\nYour request has been processed successfully.",
+        "binding": {
+          "type": "camunda:inputParameter",
+          "name": "notification_body"
+        }
+      }
+    ]
+  }
+]

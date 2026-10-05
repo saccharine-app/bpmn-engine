@@ -26,10 +26,12 @@ class ServiceTaskHandler implements BpmnNodeHandlerInterface
 
         try {
             // Attempt the standard execution
-            
+            $inputParameters = $node->input_parameters ?? [];
+            $effectiveUserData = array_merge($inputParameters, $userData);
+
             // Yield hands control back to Laravel Workflow to execute this safely on the queues
             // Use the workflow's wrapper
-            $activityResult = yield $workflow->makeActivity($activityClass, $userData);
+            $activityResult = yield $workflow->makeActivity($activityClass, $effectiveUserData);
 
             // Merge the results back into the global state
             $userData = array_merge($userData, $activityResult);

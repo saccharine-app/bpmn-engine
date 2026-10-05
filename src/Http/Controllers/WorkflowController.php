@@ -110,20 +110,15 @@ class WorkflowController extends Controller
         // If there are no saved versions, we pass a strictly validated, clean XML string
         $xml = $latestVersion ? $latestVersion->bpmn_xml : $this->getBlankBlueprintXml();
 
-        // Scan the host application for Element Templates
-        $templatesPath = resource_path('bpmn/templates');
-        $elementTemplates = [];
+        // Scan package-internal built-in templates
+        $packageTemplatesPath = __DIR__ . '/../../../resources/bpmn/templates';
+        $elementTemplates = $this->loadTemplatesFromDirectory($packageTemplatesPath);
 
-        if (File::isDirectory($templatesPath)) {
-            foreach (File::files($templatesPath) as $file) {
-                if ($file->getExtension() === 'json') {
-                    $content = json_decode(File::get($file), true);
-                    if (is_array($content)) {
-                        // Merge the parsed JSON arrays together
-                        $elementTemplates = array_merge($elementTemplates, $content);
-                    }
-                }
-            }
+        // Scan and merge host application element templates
+        $hostTemplatesPath = resource_path('bpmn/templates');
+
+        if (File::isDirectory($hostTemplatesPath)) {
+            $elementTemplates = array_merge($elementTemplates, $this->loadTemplatesFromDirectory($hostTemplatesPath));
         }
 
         return view('bpmn-engine::editor', [
@@ -131,6 +126,24 @@ class WorkflowController extends Controller
             'xml'               => $xml,
             'elementTemplates'  => $elementTemplates,
         ]);
+    }
+
+    protected function loadTemplatesFromDirectory(string $path) : array {
+        $templates = [];
+
+        if (File::isDirectory($path)) {
+            foreach (File::files($path) as $file) {
+                if ($file->getExtension() === 'json') {
+                    $content = json_decode(File::get($file), true);
+                    if (is_array($content)) {
+                        // Merge the parsed JSON arrays together
+                        $templates = array_merge($templates, $content);
+                    }
+                }
+            }
+        }
+        
+        return $templates;
     }
 
     /**
