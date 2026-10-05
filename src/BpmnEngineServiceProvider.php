@@ -95,6 +95,11 @@ class BpmnEngineServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(
             __DIR__ . '/../config/bpmn-engine.php', 'bpmn-engine'
         );
+
+        // Register the internal DemoOrder alias fallback
+        config([
+            'bpmn-engine.triggers.demo_order_created' => \Saccharine\BpmnEngine\Models\DemoOrder::class . '@created',
+        ]);
     }
 
     /**

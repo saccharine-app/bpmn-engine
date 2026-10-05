@@ -75,6 +75,9 @@ class DemoCommand extends Command
         $this->seedCallActivityPipelineWorkflow($parser);
         $this->line('Seeded: Demo: Parent Pipeline with Call Activity');
 
+        // 5. Model-triggered order creation workflow
+        $this->seedOrderNotificationWorkflow($parser);
+
         $this->info('All demo workflows seeded successfully!');
 
         $this->info('Demo successfully installed!');
@@ -560,6 +563,84 @@ class DemoCommand extends Command
             'bpmn_xml'  => $xml,
             'is_active' => true,
         ]);
+        $parser->parseAndStore($version, $xml);
+    }
+
+    protected function seedOrderNotificationWorkflow(BpmnParserService $parser): void
+    {
+        $def = WorkflowDefinition::firstOrCreate(
+            ['key' => 'demo-order-notification'],
+            ['name' => 'Demo: Order Created -> Send Notification']
+        );
+
+        $xml = <<<'XML'
+    <?xml version="1.0" encoding="UTF-8"?>
+    <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                      xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                      xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                      xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                      xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                      id="Definitions_OrderNotif"
+                      targetNamespace="http://bpmn.io/schema/bpmn">
+      <bpmn:process id="Process_OrderNotif" isExecutable="true">
+        <!-- Message Start listening for demo_order_created -->
+        <bpmn:startEvent id="Start_OrderCreated" name="Order Created">
+          <bpmn:outgoing>Flow_1</bpmn:outgoing>
+          <bpmn:messageEventDefinition id="MsgDef_1" messageRef="Msg_OrderCreated" />
+        </bpmn:startEvent>
+
+        <!-- Built-in notification activity with default template inputs -->
+        <bpmn:serviceTask id="Task_NotifyCustomer" name="Send Order Email" camunda:class="bpmn_send_notification">
+          <bpmn:extensionElements>
+            <camunda:inputOutput>
+              <camunda:inputParameter name="notification_channel">log</camunda:inputParameter>
+              <camunda:inputParameter name="notification_to">{{ customer_email }}</camunda:inputParameter>
+              <camunda:inputParameter name="notification_subject">Order {{ order_number }} Confirmation</camunda:inputParameter>
+              <camunda:inputParameter name="notification_body">Thank you {{ customer_name }}! Your order of ${{ total }} has been received.</camunda:inputParameter>
+            </camunda:inputOutput>
+          </bpmn:extensionElements>
+          <bpmn:incoming>Flow_1</bpmn:incoming>
+          <bpmn:outgoing>Flow_2</bpmn:outgoing>
+        </bpmn:serviceTask>
+
+        <bpmn:endEvent id="End_1" name="Notified">
+          <bpmn:incoming>Flow_2</bpmn:incoming>
+        </bpmn:endEvent>
+
+        <bpmn:sequenceFlow id="Flow_1" sourceRef="Start_OrderCreated" targetRef="Task_NotifyCustomer" />
+        <bpmn:sequenceFlow id="Flow_2" sourceRef="Task_NotifyCustomer" targetRef="End_1" />
+      </bpmn:process>
+
+      <bpmn:message id="Msg_OrderCreated" name="demo_order_created" />
+
+      <bpmndi:BPMNDiagram id="BPMNDiagram_OrderNotif">
+        <bpmndi:BPMNPlane id="BPMNPlane_OrderNotif" bpmnElement="Process_OrderNotif">
+          <bpmndi:BPMNShape id="Start_OrderCreated_di" bpmnElement="Start_OrderCreated">
+            <dc:Bounds x="160" y="102" width="36" height="36" />
+          </bpmndi:BPMNShape>
+          <bpmndi:BPMNShape id="Task_NotifyCustomer_di" bpmnElement="Task_NotifyCustomer">
+            <dc:Bounds x="260" y="80" width="140" height="80" />
+          </bpmndi:BPMNShape>
+          <bpmndi:BPMNShape id="End_1_di" bpmnElement="End_1">
+            <dc:Bounds x="460" y="102" width="36" height="36" />
+          </bpmndi:BPMNShape>
+          <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1">
+            <di:waypoint x="196" y="120" /><di:waypoint x="260" y="120" />
+          </bpmndi:BPMNEdge>
+          <bpmndi:BPMNEdge id="Flow_2_di" bpmnElement="Flow_2">
+            <di:waypoint x="400" y="120" /><di:waypoint x="460" y="120" />
+          </bpmndi:BPMNEdge>
+        </bpmndi:BPMNPlane>
+      </bpmndi:BPMNDiagram>
+    </bpmn:definitions>
+    XML;
+
+        $version = $def->versions()->create([
+            'version'   => $def->versions()->max('version') + 1,
+            'bpmn_xml'  => $xml,
+            'is_active' => true,
+        ]);
+
         $parser->parseAndStore($version, $xml);
     }
 }
