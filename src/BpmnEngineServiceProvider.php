@@ -99,6 +99,7 @@ class BpmnEngineServiceProvider extends ServiceProvider
         // Register the internal DemoOrder alias fallback
         config([
             'bpmn-engine.triggers.demo_order_created' => \Saccharine\BpmnEngine\Models\DemoOrder::class . '@created',
+            'bpmn-engine.activities.bpmn_send_notification' => \Saccharine\BpmnEngine\Workflows\Activities\SendNotificationActivity::class,
         ]);
     }
 

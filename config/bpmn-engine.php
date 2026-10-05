@@ -12,7 +12,6 @@ return [
     |
     */
     'activities' => [
-        'bpmn_send_notification' => \Saccharine\BpmnEngine\Workflows\Activities\SendNotificationActivity::class,
         // Example:
         // 'calculate_tax' => \App\Workflows\Activities\CalculateTaxActivity::class,
     ],
