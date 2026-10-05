@@ -14,15 +14,6 @@ class WorkflowTriggerListener
 {
     public function handle(string $eventName, array $payload)
     {
-        // REVERSE LOOKUP: Check if the fired event class is registered in our config
-        $triggers = config('bpmn-engine.triggers', []);
-        $triggerAlias = array_search($eventName, $triggers);
-
-        // If it's not registered as a trigger, the engine ignores it entirely
-        if (!$triggerAlias) {
-            return;
-        }
-
         // Extract the actual event instance from Laravel's payload array
         $eventInstance = $payload[0] ?? null;
 
@@ -31,9 +22,42 @@ class WorkflowTriggerListener
             return;
         }
 
+        $triggerAliases = [];
+
+        // CASE A: It's our built-in generic ModelEventTrigger
+        if ($eventInstance instanceof \Saccharine\BpmnEngine\Events\ModelEventTrigger) {
+            $modelClass = class_basename($eventInstance->model); // e.g., 'Order'
+            $modelSnake = strtolower(\Illuminate\Support\Str::snake($modelClass)); // 'order'
+            $action = $eventInstance->action; // 'created'
+
+            // Looks for triggers matching 'order_created' or configured aliases
+            $triggerAliases[] = "{$modelSnake}_{$action}";
+
+            // Also check if the host app mapped this model in bpmn-engine.php triggers
+            $triggersConfig = config('bpmn-engine.triggers', []);
+            $configuredKey = array_search(get_class($eventInstance->model) . "@{$action}", $triggersConfig);
+            if ($configuredKey) {
+                $triggerAliases[] = $configuredKey;
+            }
+        } 
+        // CASE B: Standard custom events using the reverse lookup registry
+        else {
+            // REVERSE LOOKUP: Check if the fired event class is registered in our config
+            $triggers = config('bpmn-engine.triggers', []);
+            $triggerAlias = array_search($eventName, $triggers);
+            if ($triggerAlias) {
+                $triggerAliases[] = $triggerAlias;
+            }
+        }
+
+        // If it's not registered as a trigger, the engine ignores it entirely
+        if (empty($triggerAliases)) {
+            return;
+        }
+
         // Find all active workflow versions that have a StartEvent mapped to this exact event alias
         $startNodes = WorkflowNode::where('type', 'startEvent')
-            ->where('implementation', $triggerAlias)
+            ->whereIn('implementation', $triggerAliases)
             ->whereHas('version', function ($query) {
                 $query->where('is_active', true);
             })

@@ -1,0 +1,38 @@
+[
+  {
+    "name": "Model Lifecycle Event Trigger",
+    "id": "saccharine.bpmn.ModelEventTrigger",
+    "appliesTo": [
+      "bpmn:StartEvent"
+    ],
+    "properties": [
+      {
+        "label": "Model Name",
+        "type": "String",
+        "value": "order",
+        "description": "The snake_case name of the model (e.g., 'order', 'user', 'custody_log').",
+        "binding": {
+          "type": "camunda:property",
+          "name": "model_name"
+        },
+        "constraints": {
+          "notEmpty": true
+        }
+      },
+      {
+        "label": "Lifecycle Action",
+        "type": "Dropdown",
+        "value": "created",
+        "choices": [
+          { "name": "Created", "value": "created" },
+          { "name": "Updated", "value": "updated" },
+          { "name": "Deleted", "value": "deleted" }
+        ],
+        "binding": {
+          "type": "camunda:property",
+          "name": "lifecycle_action"
+        }
+      }
+    ]
+  }
+]
