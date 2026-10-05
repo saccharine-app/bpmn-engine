@@ -8,6 +8,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class WorkflowNode extends Model
 {
     protected $guarded = [];
+    
+    protected $casts = [
+        'input_parameters' => 'array',
+    ];
 
     /**
      * Get the workflow version that owns this node.

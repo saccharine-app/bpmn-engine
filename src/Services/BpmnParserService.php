@@ -76,6 +76,19 @@ class BpmnParserService
                     $eventDefType = null;
                     $parentElementId = null;
 
+                    // Extract input parameters defined via Camunda extension elements
+                    $inputParameters = [];
+                    $camundaInputs = $element->xpath('.//bpmn:extensionElements/camunda:inputOutput/camunda:inputParameter');
+                    if (!empty($camundaInputs)) {
+                        foreach ($camundaInputs as $input) {
+                            $paramName = (string) $input['name'];
+                            $paramValue = (string) $input;
+                            if ($paramName !== '') {
+                                $inputParameters[$paramName] = $paramValue;
+                            }
+                        }
+                    }
+
                     // Determine if this node is nested inside a subProcess
                     $parentElements = $element->xpath('parent::bpmn:subProcess');
                     if (!empty($parentElements)) {
@@ -128,6 +141,7 @@ class BpmnParserService
                         'type'            => $type,
                         'name'            => $name ?: null,
                         'implementation'  => $implementation,
+                        'input_parameters'       => !empty($inputParameters) ? $inputParameters : null,
                         'attached_to_element_id' => $attachedToRef,
                         'event_definition_type'  => $eventDefType,
                         'parent_element_id'      => $parentElementId,
