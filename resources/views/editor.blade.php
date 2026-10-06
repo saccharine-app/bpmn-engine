@@ -116,7 +116,7 @@
             }
         });
 
-        /* window.addEventListener('bpmn:archive-requested', async () => {
+        window.addEventListener('bpmn:archive-requested', async () => {
             const response = await fetch('{{ route('bpmn.definitions.destroy', $definition->id) }}', {
                 method: 'DELETE',
                 headers: {
@@ -128,7 +128,7 @@
             if (response.ok) {
                 window.location.href = '{{ route('bpmn.index') }}';
             }
-        }); */
+        });
     </script>
 </body>
 </html>
