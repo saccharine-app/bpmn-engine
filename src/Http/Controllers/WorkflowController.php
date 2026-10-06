@@ -66,15 +66,21 @@ class WorkflowController extends Controller
         $nextVersionNumber = $definition->versions()->max('version') + 1;
 
         try {
-            // Save the raw layout
-            $version = $definition->versions()->create([
-                'version'   => $nextVersionNumber,
-                'bpmn_xml'  => $request->input('xml'),
-                'is_active' => false, // Default to false until reviewed
-            ]);
+            DB::transaction(function () use ($definition, $nextVersionNumber, $request) {
+                if ($request->boolean('is_active')) {
+                    $definition->versions()->update(['is_active' => false]);
+                }
+                
+                // Save the raw layout
+                $version = $definition->versions()->create([
+                    'version'   => $nextVersionNumber,
+                    'bpmn_xml'  => $request->input('xml'),
+                    'is_active' => $request->boolean('is_active', false),
+                ]);
 
-            // Compile the XML into relational tables
-            $this->parser->parseAndStore($version, $request->input('xml'));
+                // Compile the XML into relational tables
+                $this->parser->parseAndStore($version, $request->input('xml'));
+            });
 
             return response()->json([
                 'success'    => true,
@@ -125,6 +131,7 @@ class WorkflowController extends Controller
             'definition'        => $definition,
             'xml'               => $xml,
             'elementTemplates'  => $elementTemplates,
+            'currentVersion'    => $latestVersion,
         ]);
     }
 

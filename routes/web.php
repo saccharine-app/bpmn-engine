@@ -12,6 +12,10 @@ Route::post('/definitions', [WorkflowController::class, 'store'])->name('bpmn.st
 
 // The design editor canvas
 Route::get('/definitions/{definition}/design', [WorkflowController::class, 'design'])->name('bpmn.design');
+Route::patch('/definitions/{definition}', [WorkflowController::class, 'update'])
+    ->name('bpmn.definitions.update');
+Route::delete('/definitions/{definition}', [WorkflowController::class, 'destroy'])
+    ->name('bpmn.definitions.destroy');
 
 // Instance Tracking & Control Routes
 Route::get('/instances', [WorkflowInstanceController::class, 'index'])->name('bpmn.instances.index');
